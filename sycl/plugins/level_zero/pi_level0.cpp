@@ -1644,7 +1644,8 @@ pi_result piMemImageCreate(pi_context Context, pi_mem_flags Flags,
 }
 
 pi_result piextMemGetNativeHandle(pi_mem Mem, pi_native_handle *NativeHandle) {
-  die("piextMemGetNativeHandle: not supported");
+  assert(NativeHandle != nullptr);
+  *NativeHandle = reinterpret_cast<pi_native_handle>(Mem->getZeHandle());
   return PI_SUCCESS;
 }
 

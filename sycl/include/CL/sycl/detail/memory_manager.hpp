@@ -142,6 +142,7 @@ public:
   static void prefetch_usm(void *Ptr, QueueImplPtr Queue, size_t Len,
                            std::vector<RT::PiEvent> DepEvents,
                            RT::PiEvent &OutEvent);
+  static void *getNativePointer(void *Ptr, QueueImplPtr Queue);
 };
 } // namespace detail
 } // namespace sycl

@@ -417,15 +417,17 @@ Command *Scheduler::GraphBuilder::addHostAccessor(Requirement *Req) {
     printGraphAsDot("before_addHostAccessor");
   markModifiedIfWrite(Record, Req);
 
-  AllocaCommandBase *HostAllocaCmd =
-      getOrCreateAllocaForReq(Record, Req, HostQueue);
+  if (!Req->nocopy) {
+    AllocaCommandBase *HostAllocaCmd =
+        getOrCreateAllocaForReq(Record, Req, HostQueue);
 
-  if (sameCtx(HostAllocaCmd->getQueue()->getContextImplPtr(),
-              Record->MCurContext)) {
-    if (!isAccessModeAllowed(Req->MAccessMode, Record->MHostAccess))
-      remapMemoryObject(Record, Req, HostAllocaCmd);
-  } else
-    insertMemoryMove(Record, Req, HostQueue);
+    if (sameCtx(HostAllocaCmd->getQueue()->getContextImplPtr(),
+                Record->MCurContext)) {
+      if (!isAccessModeAllowed(Req->MAccessMode, Record->MHostAccess))
+        remapMemoryObject(Record, Req, HostAllocaCmd);
+    } else
+      insertMemoryMove(Record, Req, HostQueue);
+  }
 
   Command *UpdateHostAccCmd = insertUpdateHostReqCmd(Record, Req, HostQueue);
 
@@ -534,7 +536,7 @@ Scheduler::GraphBuilder::findAllocaForReq(MemObjRecord *Record,
                                           const Requirement *Req,
                                           const ContextImplPtr &Context) {
   auto IsSuitableAlloca = [&Context, Req](AllocaCommandBase *AllocaCmd) {
-    bool Res = sameCtx(AllocaCmd->getQueue()->getContextImplPtr(), Context);
+    bool Res = Req->nocopy || sameCtx(AllocaCmd->getQueue()->getContextImplPtr(), Context);
     if (IsSuitableSubReq(Req)) {
       const Requirement *TmpReq = AllocaCmd->getRequirement();
       Res &= AllocaCmd->getType() == Command::CommandType::ALLOCA_SUB_BUF;

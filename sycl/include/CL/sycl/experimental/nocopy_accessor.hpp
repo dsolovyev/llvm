@@ -74,7 +74,9 @@ template <typename T = DataT, int Dims = Dimensions, typename AllocatorT,
                      detail::getSyclObjImpl(BufferRef).get(), Dimensions, sizeof(DataT),
                      BufferRef.OffsetInBytes, BufferRef.IsSubBuffer)
   {
-    addHostAccessorAndWait(AccessorBaseHost::impl.get());
+    detail::AccessorImplHost *impl = AccessorBaseHost::impl.get();
+    impl->nocopy = true;
+    addHostAccessorAndWait(impl);
   }
 #endif // __SYCL_DEVICE_ONLY__
 

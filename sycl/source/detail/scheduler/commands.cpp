@@ -1208,7 +1208,12 @@ cl_int UpdateHostRequirementCommand::enqueueImp() {
   assert(MSrcAllocaCmd && "Expected valid alloca command");
   assert(MSrcAllocaCmd->getMemAllocation() && "Expected valid source pointer");
   assert(MDstPtr && "Expected valid target pointer");
-  *MDstPtr = MSrcAllocaCmd->getMemAllocation();
+
+  if (MDstReq.nocopy && !MSrcAllocaCmd->getQueue()->getContextImplPtr()->is_host()) {
+    void *mem = MSrcAllocaCmd->getMemAllocation();
+    *MDstPtr = MemoryManager::getNativePointer(mem, MSrcAllocaCmd->getQueue());
+  } else
+    *MDstPtr = MSrcAllocaCmd->getMemAllocation();
 
   return CL_SUCCESS;
 }

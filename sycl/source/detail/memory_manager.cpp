@@ -573,6 +573,13 @@ void MemoryManager::prefetch_usm(void *Mem, QueueImplPtr Queue, size_t Length,
   }
 }
 
+void *MemoryManager::getNativePointer(void *Ptr, QueueImplPtr Queue) {
+  pi_native_handle h = 0;
+  const detail::plugin &Plugin = Queue->getPlugin();
+  Plugin.call<detail::PiApiKind::piextMemGetNativeHandle>(pi::cast<RT::PiMem>(Ptr), &h);
+  return pi::cast<void *>(h);
+}
+
 } // namespace detail
 } // namespace sycl
 } // __SYCL_INLINE_NAMESPACE(cl)

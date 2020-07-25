@@ -101,7 +101,8 @@ public:
         MMemoryRange(Other.MMemoryRange), MAccessMode(Other.MAccessMode),
         MSYCLMemObj(Other.MSYCLMemObj), MDims(Other.MDims),
         MElemSize(Other.MElemSize), MOffsetInBytes(Other.MOffsetInBytes),
-        MIsSubBuffer(Other.MIsSubBuffer), MIsESIMDAcc(Other.MIsESIMDAcc) {}
+        MIsSubBuffer(Other.MIsSubBuffer), MIsESIMDAcc(Other.MIsESIMDAcc),
+        nocopy(Other.nocopy) {}
 
   // The resize method provides a way to change the size of the
   // allocated memory and corresponding properties for the accessor.
@@ -136,6 +137,8 @@ public:
 
   // Whether this accessor is ESIMD accessor with special memory allocation.
   bool MIsESIMDAcc;
+
+  bool nocopy = false;
 };
 
 using AccessorImplPtr = shared_ptr_class<AccessorImplHost>;
