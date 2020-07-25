@@ -20,6 +20,11 @@ class handler;
 class queue;
 template <int dimensions> class range;
 
+namespace experimental {
+template <typename DataT, int Dimensions, access::mode AccessMode>
+class nocopy_accessor;
+}
+
 /// Defines a shared array that can be used by kernels in queues.
 ///
 /// Buffers can be 1-, 2-, and 3-dimensional. They have to be accessed using
@@ -339,6 +344,8 @@ private:
   template <typename DataT, int dims, access::mode mode, access::target target,
             access::placeholder isPlaceholder>
   friend class accessor;
+  template <typename DataT, int dims, access::mode mode>
+  friend class experimental::nocopy_accessor;
   range<dimensions> Range;
   // Offset field specifies the origin of the sub buffer inside the parent
   // buffer
